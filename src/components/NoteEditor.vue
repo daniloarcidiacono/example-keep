@@ -35,11 +35,11 @@
         <v-card-title
             class="headline lighten-2"
             primary-title>
-          <v-text-field v-model="note.title"></v-text-field>
+          <v-text-field v-model="note.title" placeholder="Title"></v-text-field>
         </v-card-title>
 
         <v-card-text :style="{ 'backgroundColor': note.color }">
-          <v-textarea v-model="note.content"></v-textarea>
+          <v-textarea v-model="note.content" placeholder="Content"></v-textarea>
         </v-card-text>
 
         <v-divider></v-divider>

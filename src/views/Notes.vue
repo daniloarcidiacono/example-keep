@@ -31,7 +31,7 @@ import {LoadingState} from "@/shared/LoadingState";
 </template>
 
 <script lang="ts">
-  import {Component, Vue} from "vue-property-decorator";
+  import {Component, Prop, Vue, Watch} from "vue-property-decorator";
   import NoteList from "@/components/NoteList.vue";
   import {KeepNote} from "@/shared/api/KeepNote";
   import {LoadingState} from "@/shared/LoadingState";
@@ -48,15 +48,23 @@ import {LoadingState} from "@/shared/LoadingState";
     }
   })
   export default class Notes extends Vue {
+    @Prop()
+    private archived!: boolean;
+
     private notes: KeepNote[] = [];
     private state: LoadingState = LoadingState.LOADING;
     private note: KeepNote | null = null;
 
     public constructor() {
       super();
-      this.load();
 
+      this.load();
       EventBus.$on('newNote', this.newNote.bind(this));
+    }
+
+    @Watch('archived')
+    private onArchivedChange() {
+      this.load();
     }
 
     private deleteNote(note: KeepNote): void {
@@ -95,8 +103,7 @@ import {LoadingState} from "@/shared/LoadingState";
     private load(): void {
       this.state = LoadingState.LOADING;
 
-      // TODO: Handle archived state
-      keepApi.fetchNotes(false).then((result: KeepNote[]) => {
+      keepApi.fetchNotes(this.archived).then((result: KeepNote[]) => {
         this.notes = result;
         this.state = LoadingState.LOADED;
       }).catch((error: KeepError) => {

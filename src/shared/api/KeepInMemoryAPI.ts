@@ -18,6 +18,14 @@ export class KeepInMemoryAPI implements KeepAPI {
             color: '#99D9EA',
             archived: false,
             rank: 1
+        },
+        {
+            id: "3",
+            title: "Books to read",
+            content: "Design patterns\nHarry Potter",
+            color: '#99D9EA',
+            archived: true,
+            rank: 1
         }
     ];
 

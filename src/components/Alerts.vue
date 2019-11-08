@@ -4,7 +4,7 @@
 
 <template>
     <div class="Alerts">
-        <v-snackbar :value="alert" :timeout="2000">
+        <v-snackbar v-if="alert" :value="true" :timeout="2000">
             {{ alert.text }}
             <v-btn
                 color="pink"

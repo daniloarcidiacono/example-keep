@@ -6,14 +6,20 @@ Vue.use(VueRouter);
 
 const routes = [
   {
+    path: '/notes/archived',
+    name: 'archived',
+    component: Notes,
+    props: {
+      archived: true
+    }
+  },
+  {
     path: '/notes',
     name: 'notes',
     component: Notes,
-  },
-  {
-    path: '/notes/archived',
-    name: 'archived',
-    component: Notes
+    props: {
+      archived: false
+    }
   },
   {
     path: '*',
