@@ -3,31 +3,23 @@ import {KeepAPI} from "@/shared/api/KeepAPI";
 
 export class KeepInMemoryAPI implements KeepAPI {
     private notes: KeepNote[] = [
-        {
-            id: "1",
-            title: "Grocery list",
-            content: "Apples\nSteak",
-            color: '#FFFFFF',
-            archived: false,
-            rank: 0
-        },
-        {
-            id: "2",
-            title: "Movies to watch",
-            content: "Joker\nInterstellar",
-            color: '#99D9EA',
-            archived: false,
-            rank: 1
-        },
-        {
-            id: "3",
-            title: "Books to read",
-            content: "Design patterns\nHarry Potter",
-            color: '#99D9EA',
-            archived: true,
-            rank: 1
-        }
+
     ];
+
+    public constructor() {
+        for (let i = 0; i < 20; i++) {
+            this.notes.push(
+                {
+                    id: `${i}`,
+                    title: `Note${i}`,
+                    content: `Content${i}`,
+                    color: '#FFFFFF',
+                    archived: false,
+                    rank: i
+                }
+            );
+        }
+    }
 
     public addNote(note: KeepNote): Promise<string> {
         return new Promise<string>((resolve, reject) => {
@@ -76,11 +68,10 @@ export class KeepInMemoryAPI implements KeepAPI {
 
     public fetchNotes(archived: boolean): Promise<KeepNote[]> {
         return new Promise<KeepNote[]>((resolve, reject) => {
-            const result: KeepNote[] =  this.notes.filter(x => x.archived === archived);
+            const result: KeepNote[] =  this.notes.filter(x => x.archived === archived).sort((a, b) => a.rank - b.rank);
             setTimeout(() => {
                 resolve(result);
             }, 500);
-            // resolve(result);
         });
     }
 

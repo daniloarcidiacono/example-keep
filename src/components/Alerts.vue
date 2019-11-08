@@ -29,18 +29,31 @@
     @Component
     export default class Alerts extends Vue {
         public alert: Alert | null = null;
+        public alertTimer: number | null;
 
         public constructor() {
             super();
             EventBus.$on('alert', this.addAlert.bind(this));
         }
 
+        public mounted() {
+            this.alertTimer = null;
+        }
+
         public addAlert(alert: Alert) {
+            this.dismissAlert();
+            this.alertTimer = setTimeout(() => {
+                this.alert = null;
+            }, 2000);
             this.alert = alert;
         }
 
         public dismissAlert() {
-            this.alert = null;
+            if (this.alertTimer != null) {
+                clearTimeout(this.alertTimer);
+                this.alertTimer = null;
+                this.alert = null;
+            }
         }
     }
 </script>
