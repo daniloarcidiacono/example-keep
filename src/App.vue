@@ -88,7 +88,7 @@
     </v-navigation-drawer>
 
     <v-content>
-      <v-alert v-for="alert in alerts" v-text="alert.text" dismissible />
+      <Alerts />
       <router-view />
     </v-content>
   </v-app>
@@ -96,10 +96,14 @@
 
 <script lang="ts">
   import {Vue, Component, Prop} from "vue-property-decorator";
-  import {Alert, alertService} from "@/shared/services/AlertService";
   import {EventBus} from "@/shared/EventBus";
+  import Alerts from "@/components/Alerts.vue";
 
-  @Component
+  @Component({
+    components: {
+      Alerts
+    }
+  })
   export default class App extends Vue {
     private drawer: boolean | null = null;
 
@@ -122,10 +126,6 @@
 
     public newNote(): void {
       EventBus.$emit('newNote');
-    }
-
-    public get alerts(): Alert[] {
-      return alertService.alerts;
     }
   }
 </script>

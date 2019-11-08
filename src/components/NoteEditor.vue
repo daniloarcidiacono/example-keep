@@ -27,40 +27,42 @@
 </style>
 
 <template>
-  <v-dialog
-      v-model="editDialogVisible"
-      width="500">
-    <v-card v-if="note">
-      <v-card-title
-          class="headline lighten-2"
-          primary-title>
-        <v-text-field v-model="note.title"></v-text-field>
-      </v-card-title>
+  <v-overlay :value="editDialogVisible">
+    <v-dialog
+        v-model="editDialogVisible"
+        width="500">
+      <v-card v-if="note">
+        <v-card-title
+            class="headline lighten-2"
+            primary-title>
+          <v-text-field v-model="note.title"></v-text-field>
+        </v-card-title>
 
-      <v-card-text :style="{ 'backgroundColor': note.color }">
-        <v-textarea v-model="note.content"></v-textarea>
-      </v-card-text>
+        <v-card-text :style="{ 'backgroundColor': note.color }">
+          <v-textarea v-model="note.content"></v-textarea>
+        </v-card-text>
 
-      <v-divider></v-divider>
+        <v-divider></v-divider>
 
-      <v-card-actions>
-        <div v-for="color in colors" class="Swatches">
-          <div class="ColorSwatch"
-               :style="{ 'backgroundColor': color }"
-               :class="{ 'ColorSwatch--selected': color === note.color }"
-               @click="note.color = color">
+        <v-card-actions>
+          <div v-for="color in colors" class="Swatches">
+            <div class="ColorSwatch"
+                 :style="{ 'backgroundColor': color }"
+                 :class="{ 'ColorSwatch--selected': color === note.color }"
+                 @click="note.color = color">
+            </div>
           </div>
-        </div>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="editNote()">
-          Save
-        </v-btn>
-        <v-btn text @click="cancelUpdateNote()">
-          Cancel
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="editNote()">
+            Save
+          </v-btn>
+          <v-btn text @click="cancelUpdateNote()">
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-overlay>
 </template>
 
 <script lang="ts">
