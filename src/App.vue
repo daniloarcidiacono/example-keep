@@ -1,4 +1,10 @@
 <style lang="scss">
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
   #keep .v-navigation-drawer__border {
     display: none
   }
@@ -7,10 +13,9 @@
 <template>
   <v-app id="keep">
     <v-app-bar
-            app
-            clipped-left
-            color="amber"
-    >
+      app
+      clipped-left
+      color="amber">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <span class="title ml-3 mr-5">Google&nbsp;<span class="font-weight-light">Keep</span></span>
 <!--      <v-text-field-->
@@ -22,17 +27,6 @@
 <!--      />-->
 
       <v-spacer />
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn
-              icon
-              large
-              @click="newNote">
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-        <span>Add note</span>
-      </v-tooltip>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -72,8 +66,7 @@
               v-else
               :key="i"
               link
-              :to="item.link"
-          >
+              :to="item.link">
             <v-list-item-action>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
@@ -91,12 +84,12 @@
       <Alerts />
       <router-view />
     </v-content>
+
   </v-app>
 </template>
 
 <script lang="ts">
-  import {Vue, Component, Prop} from "vue-property-decorator";
-  import {EventBus} from "@/shared/EventBus";
+  import {Component, Vue} from "vue-property-decorator";
   import Alerts from "@/components/Alerts.vue";
 
   @Component({
@@ -108,25 +101,10 @@
     private drawer: boolean | null = null;
 
     private items: any[] = [
-      { icon: 'mdi-note', text: 'Notes', link: '/notes' },
-      // { icon: 'touch_app', text: 'Reminders' },
-      // { divider: true },
-      // { heading: 'Labels' },
-      // { icon: 'add', text: 'Create new label' },
+      { icon: 'mdi-lightbulb-outline', text: 'Notes', link: '/notes' },
       { divider: true },
-      { icon: 'mdi-archive', text: 'Archive', link: '/notes/archived' },
-      // { icon: 'delete', text: 'Trash' },
-      // { divider: true },
-      // { icon: 'settings', text: 'Settings' },
-      // { icon: 'chat_bubble', text: 'Trash' },
-      // { icon: 'help', text: 'Help' },
-      // { icon: 'phonelink', text: 'App downloads' },
-      // { icon: 'keyboard', text: 'Keyboard shortcuts' },
+      { icon: 'mdi-package-down', text: 'Archive', link: '/notes/archived' },
     ];
-
-    public newNote(): void {
-      EventBus.$emit('newNote');
-    }
   }
 </script>
 

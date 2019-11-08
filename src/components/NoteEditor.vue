@@ -34,12 +34,13 @@
       <v-card v-if="note">
         <v-card-title
             class="headline lighten-2"
+            :style="{ 'backgroundColor': note.color }"
             primary-title>
-          <v-text-field v-model="note.title" placeholder="Title"></v-text-field>
+          <v-text-field v-model="note.title" placeholder="Title" autofocus></v-text-field>
         </v-card-title>
 
         <v-card-text :style="{ 'backgroundColor': note.color }">
-          <v-textarea v-model="note.content" placeholder="Content"></v-textarea>
+          <v-textarea v-model="note.content" placeholder="Content" auto-grow flat solo></v-textarea>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -79,9 +80,21 @@
 
     private colors: string[] = [
       "#FFFFFF",
-      "#99D9EA",
-      "#ca4a84",
-      "#57ee39"
+      "#C33C23",
+      "#DC453D",
+      "#FF6961",
+      "#FF756D",
+      "#FFF49C",
+      "#FFFD96",
+      "#85DE77",
+      "#FF9AA2",
+      "#FFB7B2",
+      "#FFDAC1",
+      "#E2F0CB",
+      "#F9FFCB",
+      "#B5EAD7",
+      "#C7CEEA",
+      "#FFB447"
     ];
 
     public editNote(): void {

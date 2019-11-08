@@ -18,15 +18,30 @@ import {LoadingState} from "@/shared/LoadingState";
 
 <template>
   <div class="Notes">
-    <div class="Notes__Error" v-if="isError">
-      Error
-      <div :click="load">Retry</div>
-    </div>
-    <div class="Notes__Loading" v-if="isLoading">
-      <v-progress-circular indeterminate />
-    </div>
-    <NoteList v-if="isLoaded" :notes="notes" @deleteNote="deleteNote" />
+    <AlertMessage v-if="noNotes" icon="mdi-note-multiple-outline">
+      No notes
+    </AlertMessage>
+    <AlertMessage v-if="isError" icon="mdi-alert-circle-outline">
+      Could not load notes, <a href="#" @click.stop="load">retry.</a>
+    </AlertMessage>
+    <v-progress-circular v-if="isLoading" indeterminate />
+    <NoteList v-if="hasNotes" :notes="notes" @deleteNote="deleteNote" @archiveNote="archiveNote" />
     <NoteEditor :note="note" @noteEdited="createNote" @noteCanceled="cancelCreateNote" />
+
+    <v-tooltip left>
+      <template v-slot:activator="{ on }">
+        <v-btn fab
+               bottom
+               right
+               fixed
+               color="primary"
+               @click="newNote"
+               v-on="on">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+      <span>Add note</span>
+    </v-tooltip>
   </div>
 </template>
 
@@ -37,14 +52,15 @@ import {LoadingState} from "@/shared/LoadingState";
   import {LoadingState} from "@/shared/LoadingState";
   import {keepApi} from "@/shared/api/KeepInMemoryAPI";
   import {KeepError} from "@/shared/api/KeepError";
-  import {EventBus} from "@/shared/EventBus";
   import NoteEditor from "@/components/NoteEditor.vue";
   import {alertService} from "@/shared/services/AlertService";
+  import AlertMessage from "@/components/AlertMessage.vue";
 
   @Component({
     components: {
       NoteList,
-      NoteEditor
+      NoteEditor,
+      AlertMessage
     }
   })
   export default class Notes extends Vue {
@@ -59,7 +75,6 @@ import {LoadingState} from "@/shared/LoadingState";
       super();
 
       this.load();
-      EventBus.$on('newNote', this.newNote.bind(this));
     }
 
     @Watch('archived')
@@ -67,13 +82,22 @@ import {LoadingState} from "@/shared/LoadingState";
       this.load();
     }
 
+    private archiveNote(note: KeepNote): void {
+      keepApi.archiveNote(note.id).then(() => {
+        alertService.success("Note archived");
+        this.notes.splice(this.notes.indexOf(note), 1);
+      }).catch((error: KeepError) => {
+        alertService.error("Could not archive note");
+      })
+    }
+
     private deleteNote(note: KeepNote): void {
       keepApi.deleteNote(note.id!).then(() => {
         alertService.success("Note deleted");
-        this.load();
+        this.notes.splice(this.notes.indexOf(note), 1);
       }).catch((error: KeepError) => {
         alertService.error("Could not delete note");
-      })
+      });
     }
 
     private newNote(): void {
@@ -82,15 +106,18 @@ import {LoadingState} from "@/shared/LoadingState";
         content: "",
         color: "#FFFFFF",
         archived: false,
-        rank: 1
+        rank: Math.max(...this.notes.map(x => x.rank)) + 1
       } as KeepNote;
     }
 
     private createNote(): void {
       keepApi.addNote(this.note!).then((id: string) => {
+        // this.notes.push(this.note);
+        // For some reason, grid relayouting does not work when adding a new element :(
+        // So we are forced to reload everything
+        this.load();
         alertService.success("Note created");
         this.cancelCreateNote();
-        this.load();
       }).catch((error: KeepError) => {
         alertService.error("Could not create note");
       });
@@ -116,12 +143,16 @@ import {LoadingState} from "@/shared/LoadingState";
       return this.state === LoadingState.LOADING;
     }
 
-    public get isLoaded(): boolean {
-      return this.state === LoadingState.LOADED;
-    }
-
     public get isError(): boolean {
       return this.state === LoadingState.ERROR;
+    }
+
+    public get noNotes(): boolean {
+      return this.state === LoadingState.LOADED && this.notes.length === 0;
+    }
+
+    public get hasNotes(): boolean {
+      return this.state === LoadingState.LOADED && this.notes.length > 0;
     }
   }
 </script>
