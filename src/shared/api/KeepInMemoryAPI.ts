@@ -111,5 +111,3 @@ export class KeepInMemoryAPI implements KeepAPI {
         return null;
     }
 }
-
-export const keepApi: KeepInMemoryAPI = new KeepInMemoryAPI();

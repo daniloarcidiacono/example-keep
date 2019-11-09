@@ -18,18 +18,41 @@
       color="amber">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <span class="title ml-3 mr-5">Google&nbsp;<span class="font-weight-light">Keep</span></span>
-<!--      <v-text-field-->
-<!--              solo-inverted-->
-<!--              flat-->
-<!--              hide-details-->
-<!--              label="Search"-->
-<!--              prepend-inner-icon="search"-->
-<!--      />-->
-
+      <!--<v-text-field-->
+              <!--solo-inverted-->
+              <!--flat-->
+              <!--hide-details-->
+              <!--label="Search"-->
+              <!--prepend-inner-icon="mdi-magnify"-->
+      <!--/>-->
       <v-spacer />
+
+      <div style="margin-right: 1em">
+        {{ getUsername() }}
+      </div>
+
+      <v-menu bottom left v-if="isAuthenticated()">
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            color="yellow"
+            v-on="on">
+            <v-avatar style="margin-right: 1em">
+              <img src="@/assets/avatar_woman.jpg">
+            </v-avatar>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item>
+            <v-list-item-title @click="logout">Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-navigation-drawer
+        v-if="isAuthenticated()"
         v-model="drawer"
         app
         clipped
@@ -38,26 +61,8 @@
           dense
           class="grey lighten-4">
         <template v-for="(item, i) in items">
-          <v-row
-              v-if="item.heading"
-              :key="i"
-              align="center">
-            <v-col cols="6">
-              <v-subheader v-if="item.heading">
-                {{ item.heading }}
-              </v-subheader>
-            </v-col>
-            <v-col
-                cols="6"
-                class="text-right">
-              <v-btn
-                  small
-                  text>
-                edit</v-btn>
-            </v-col>
-          </v-row>
           <v-divider
-              v-else-if="item.divider"
+              v-if="item.divider"
               :key="i"
               dark
               class="my-4"
@@ -84,13 +89,13 @@
       <Alerts />
       <router-view />
     </v-content>
-
   </v-app>
 </template>
 
 <script lang="ts">
   import {Component, Vue} from "vue-property-decorator";
   import Alerts from "@/components/Alerts.vue";
+  import {securityService} from "@/shared/services/SecurityService";
 
   @Component({
     components: {
@@ -102,9 +107,21 @@
 
     private items: any[] = [
       { icon: 'mdi-lightbulb-outline', text: 'Notes', link: '/notes' },
-      { divider: true },
       { icon: 'mdi-package-down', text: 'Archive', link: '/notes/archived' },
     ];
+
+    public logout(): void {
+      securityService.clearIdentity();
+      this.$router.push('login');
+    }
+
+    public isAuthenticated(): boolean {
+      return securityService.isAuthenticated();
+    }
+
+    public getUsername(): string {
+      return securityService.username;
+    }
   }
 </script>
 

@@ -1,4 +1,3 @@
-import {LoadingState} from "@/shared/LoadingState";
 <style lang="scss">
   .Notes {
     width: 100%;
@@ -7,12 +6,6 @@ import {LoadingState} from "@/shared/LoadingState";
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    &__Error {
-    }
-
-    &__Loading {
-    }
   }
 </style>
 
@@ -25,10 +18,10 @@ import {LoadingState} from "@/shared/LoadingState";
       Could not load notes, <a href="#" @click.stop="load">retry.</a>
     </AlertMessage>
     <v-progress-circular v-if="isLoading" indeterminate />
-    <NoteList v-if="hasNotes" :notes="notes" @deleteNote="deleteNote" @archiveNote="archiveNote" />
+    <NoteList v-if="hasNotes" :notes="notes" @deleteNote="deleteNote" @archiveNote="archiveNote" @swapNote="swapNote" />
     <NoteEditor :note="note" @noteEdited="createNote" @noteCanceled="cancelCreateNote" />
 
-    <v-tooltip left>
+    <v-tooltip left v-if="!archived">
       <template v-slot:activator="{ on }">
         <v-btn fab
                bottom
@@ -50,11 +43,11 @@ import {LoadingState} from "@/shared/LoadingState";
   import NoteList from "@/components/NoteList.vue";
   import {KeepNote} from "@/shared/api/KeepNote";
   import {LoadingState} from "@/shared/LoadingState";
-  import {keepApi} from "@/shared/api/KeepInMemoryAPI";
   import {KeepError} from "@/shared/api/KeepError";
   import NoteEditor from "@/components/NoteEditor.vue";
   import {alertService} from "@/shared/services/AlertService";
   import AlertMessage from "@/components/AlertMessage.vue";
+  import {keepApi} from "@/shared/api/APIExports";
 
   @Component({
     components: {
@@ -82,6 +75,12 @@ import {LoadingState} from "@/shared/LoadingState";
       this.load();
     }
 
+    private swapNote(swap: { from: number, to: number }): void {
+      const origin = this.notes[swap.from];
+      this.notes[swap.from] = this.notes[swap.to];
+      Vue.set(this.notes, swap.to, origin);
+    }
+
     private archiveNote(note: KeepNote): void {
       keepApi.archiveNote(note.id).then(() => {
         alertService.success("Note archived");
@@ -106,7 +105,7 @@ import {LoadingState} from "@/shared/LoadingState";
         content: "",
         color: "#FFFFFF",
         archived: false,
-        rank: Math.max(...this.notes.map(x => x.rank)) + 1
+        rank: this.notes.length === 0 ? 0 : Math.max(...this.notes.map(x => x.rank)) + 1
       } as KeepNote;
     }
 
@@ -131,7 +130,8 @@ import {LoadingState} from "@/shared/LoadingState";
       this.state = LoadingState.LOADING;
 
       keepApi.fetchNotes(this.archived).then((result: KeepNote[]) => {
-        this.notes = result;
+        // Sort the notes by rank, just for sure
+        this.notes = result.sort((a, b) => a.rank - b.rank);
         this.state = LoadingState.LOADED;
       }).catch((error: KeepError) => {
         this.notes = [];

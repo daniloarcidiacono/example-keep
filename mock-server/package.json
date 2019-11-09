@@ -1,0 +1,26 @@
+{
+  "name": "mock-server",
+  "version": "0.0.1",
+  "description": "Mock Server for Google Keep",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "nodemon $NODE_DEBUG_OPTION --exec babel-node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Danilo Arcidiacono",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "nodemon": "^1.19.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "swagger-jsdoc": "^3.4.0",
+    "swagger-ui-express": "^4.0.7",
+    "uuid": "^3.3.3"
+  }
+}

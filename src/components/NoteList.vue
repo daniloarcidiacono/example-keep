@@ -8,16 +8,39 @@
     .NoteCard {
         width: 240px;
         height: 240px;
-        cursor: move;
+        cursor: grab;
+        user-select: none;
 
         &__Title {
             height: 64px;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            display: block;
         }
 
         &__Subtitle {
             height: 120px;
             overflow: hidden;
             margin-top: 0 !important;
+
+            & textarea {
+                overflow: hidden;
+                cursor: grab;
+
+            }
+        }
+
+        &__Actions,
+        &__ActionsDivider {
+            opacity: 0;
+        }
+
+        &:hover &__Actions,
+        &:hover &__ActionsDivider {
+            opacity: 1;
+            transition: opacity .55s ease-in-out;
         }
     }
 
@@ -62,9 +85,11 @@
                         class="NoteCard mx-auto"
                         :style="{'backgroundColor': note.color}">
                         <v-card-title class="NoteCard__Title headline">{{ note.title }}</v-card-title>
-                        <v-card-subtitle class="NoteCard__Subtitle">{{ note.content }}</v-card-subtitle>
-                        <v-divider/>
-                        <v-card-actions>
+                        <v-card-subtitle class="NoteCard__Subtitle">
+                            <v-textarea v-model="note.content" readonly no-resize></v-textarea>
+                        </v-card-subtitle>
+                        <v-divider class="NoteCard__ActionsDivider"/>
+                        <v-card-actions class="NoteCard__Actions">
                             <v-spacer></v-spacer>
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on }">
@@ -100,12 +125,12 @@
 </template>
 
 <script lang="ts">
-    import {Vue, Component, Prop, Watch} from "vue-property-decorator";
+  import {Vue, Component, Prop, Watch} from "vue-property-decorator";
   import {KeepNote} from "@/shared/api/KeepNote";
-  import {keepApi} from "@/shared/api/KeepInMemoryAPI";
   import {KeepError} from "@/shared/api/KeepError";
   import {alertService} from "@/shared/services/AlertService";
   import NoteEditor from "@/components/NoteEditor.vue";
+  import {keepApi} from "@/shared/api/APIExports";
   const Muuri = require('muuri');
 
   @Component({
@@ -122,20 +147,10 @@
     private noteToEditIndex: number | null = null;
     private noteToEdit: KeepNote | null = null;
 
-    public constructor() {
-        super();
-    }
-
     public dragStartIndex!: number | null;
 
-    @Watch('notes')
-    private relayout(): void {
-        this.grid.layout(true);
-        this.grid.synchronize();
-    }
-
-    public beforeDestroy(): void {
-        this.grid.destroy();
+    public constructor() {
+        super();
     }
 
     public mounted() {
@@ -152,7 +167,7 @@
         .on('dragStart', (item, event) => {
             this.dragStartIndex = this.grid.getItems().indexOf(item);
         })
-        .on('dragEnd', (item, event) => {
+        .on('dragReleaseEnd', (item, event) => {
             const dragEndIndex: number = this.grid.getItems().indexOf(item);
             const startNote: KeepNote = this.notes[this.dragStartIndex!];
             const endNote: KeepNote = this.notes[dragEndIndex];
@@ -167,14 +182,35 @@
                     keepApi.updateNoteRank(endNote.id, startRank)
                 ]).then(() => {
                     alertService.success('Note rank updated');
+
+                    // Update the ranks
+                    startNote.rank = endRank;
+                    endNote.rank = startRank;
+
+                    // Swap the model
+                    this.$emit('swapNote', { from: this.dragStartIndex!, to: dragEndIndex });
+
+                    // Hack to fix grid render order
+                    this.grid.move(item, this.dragStartIndex, { action: "swap", layout: "instant" });
                 }).catch(() => {
-                    this.grid.move(item, this.dragStartIndex);
+                    // Undo the movement
+                    this.grid.move(item, this.dragStartIndex, { action: "swap" });
                     alertService.error('Could not update note rank');
                 }).finally(() => {
                     this.dragStartIndex = null;
                 });
             }
         });
+    }
+
+    public beforeDestroy(): void {
+        this.grid.destroy();
+    }
+
+    @Watch('notes')
+    private relayout(): void {
+        this.grid.layout(true);
+        this.grid.synchronize();
     }
 
     public deleteNote(note: KeepNote): void {
@@ -186,8 +222,8 @@
     }
 
     public editNote(note: KeepNote): void {
-      this.noteToEditIndex = this.notes.indexOf(note);
-      this.noteToEdit = { ... note };
+        this.noteToEditIndex = this.notes.indexOf(note);
+        this.noteToEdit = { ... note };
     }
 
     public updateNote(note: KeepNote): void {

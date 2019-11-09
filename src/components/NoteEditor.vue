@@ -40,7 +40,7 @@
         </v-card-title>
 
         <v-card-text :style="{ 'backgroundColor': note.color }">
-          <v-textarea v-model="note.content" placeholder="Content" auto-grow flat solo></v-textarea>
+          <v-textarea v-model="note.content" placeholder="Content" :background-color="note.color" auto-grow flat solo></v-textarea>
         </v-card-text>
 
         <v-divider></v-divider>
