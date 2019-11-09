@@ -19,6 +19,7 @@
     "web-animations-js": "^2.3.2"
   },
   "devDependencies": {
+    "@mdi/font": "^4.5.95",
     "@vue/cli-plugin-router": "^4.0.0",
     "@vue/cli-plugin-typescript": "^4.0.0",
     "@vue/cli-service": "^4.0.0",
