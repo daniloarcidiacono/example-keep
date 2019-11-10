@@ -23,7 +23,7 @@
     <div class="Login__Title headline">
         Sign in
     </div>
-    <v-form v-model="valid">
+    <v-form v-model="valid" @keyup.native.enter="valid && doLogin()">
         <v-text-field
             v-model="username"
             label="Username"
@@ -49,8 +49,7 @@
     <v-btn class="Login__Button"
            color="primary"
            :disabled="!valid"
-           :loading="loading"
-           @click="doLogin">
+           :loading="loading">
         Login
     </v-btn>
   </div>
