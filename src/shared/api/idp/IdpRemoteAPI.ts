@@ -1,11 +1,11 @@
-import {LoginResponse} from "./dto/LoginResponse";
-import axios, {AxiosResponse} from "axios";
-import {KeepError} from "../keep/dto/KeepError";
-import {IdpAPI} from "@/shared/api/idp/IdpAPI";
+import {LoginResponse} from './dto/LoginResponse';
+import axios, {AxiosResponse} from 'axios';
+import {KeepError} from '../keep/dto/KeepError';
+import {IdpAPI} from '@/shared/api/idp/IdpAPI';
 
 export class IdpRemoteAPI implements IdpAPI {
     public constructor() {
-        console.info("Using IdpRemoteAPI...");
+        console.info('Using IdpRemoteAPI...');
     }
 
     public login(username: string, password: string): Promise<LoginResponse> {

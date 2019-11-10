@@ -1,5 +1,5 @@
-import {EventBus} from "@/shared/EventBus";
-import {Alert} from "@/components/Alerts.vue";
+import {EventBus} from '@/shared/EventBus';
+import {Alert} from '@/components/Alerts.vue';
 
 export class AlertService {
     public success(text: string): void {

@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import VueRouter, {Route} from 'vue-router';
-import Notes from "@/views/Notes.vue";
-import Login from "@/views/Login.vue";
-import {securityService} from "@/shared/services/SecurityService";
+import Notes from '@/views/Notes.vue';
+import Login from '@/views/Login.vue';
+import {securityService} from '@/shared/services/SecurityService';
 
 Vue.use(VueRouter);
 
@@ -12,35 +12,35 @@ const routes = [
     name: 'archived',
     component: Notes,
     props: {
-      archived: true
+      archived: true,
     },
     meta: {
-      anonymousAllowed: false
-    }
+      anonymousAllowed: false,
+    },
   },
   {
     path: '/notes',
     name: 'notes',
     component: Notes,
     props: {
-      archived: false
+      archived: false,
     },
     meta: {
-      anonymousAllowed: false
-    }
+      anonymousAllowed: false,
+    },
   },
   {
     path: '/login',
     name: 'login',
     component: Login,
     meta: {
-      anonymousAllowed: true
-    }
+      anonymousAllowed: true,
+    },
   },
   {
     path: '*',
-    redirect: '/notes'
-  }
+    redirect: '/notes',
+  },
 ];
 
 const router = new VueRouter({

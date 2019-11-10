@@ -1,8 +1,8 @@
-import axios, {AxiosResponse} from "axios";
-import {securityService} from "../../services/SecurityService";
-import {KeepAPI} from "@/shared/api/keep/KeepAPI";
-import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
-import {KeepError} from "@/shared/api/keep/dto/KeepError";
+import axios, {AxiosResponse} from 'axios';
+import {securityService} from '../../services/SecurityService';
+import {KeepAPI} from '@/shared/api/keep/KeepAPI';
+import {KeepNote} from '@/shared/api/keep/dto/KeepNote';
+import {KeepError} from '@/shared/api/keep/dto/KeepError';
 
 export class KeepRemoteAPI implements KeepAPI {
     public addNote(note: KeepNote): Promise<string> {

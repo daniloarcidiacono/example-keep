@@ -1,11 +1,11 @@
-import {LoginResponse} from "./dto/LoginResponse";
-import {IdpAPI} from "@/shared/api/idp/IdpAPI";
+import {LoginResponse} from './dto/LoginResponse';
+import {IdpAPI} from '@/shared/api/idp/IdpAPI';
 
 export class IdpInMemoryAPI implements IdpAPI {
     private tokens: { [token: string]: string } = {};
 
     public constructor() {
-        console.info("Using IdpInMemoryAPI...");
+        console.info('Using IdpInMemoryAPI...');
     }
 
     public login(username: string, password: string): Promise<LoginResponse> {

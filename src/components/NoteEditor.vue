@@ -55,43 +55,43 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from "vue-property-decorator";
-  import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
+import {Component, Prop, Vue} from 'vue-property-decorator';
+import {KeepNote} from '@/shared/api/keep/dto/KeepNote';
 
-  @Component
-  export default class NoteEditor extends Vue {
-    @Prop()
-    private note!: KeepNote | null;
+@Component
+export default class NoteEditor extends Vue {
+  @Prop()
+  private note!: KeepNote | null;
 
-    private colors: string[] = [
-      "#FFFFFF",
-      "#C33C23",
-      "#DC453D",
-      "#FF6961",
-      "#FF756D",
-      "#FFF49C",
-      "#FFFD96",
-      "#85DE77",
-      "#FF9AA2",
-      "#FFB7B2",
-      "#FFDAC1",
-      "#E2F0CB",
-      "#F9FFCB",
-      "#B5EAD7",
-      "#C7CEEA",
-      "#FFB447"
-    ];
+  private colors: string[] = [
+    '#FFFFFF',
+    '#C33C23',
+    '#DC453D',
+    '#FF6961',
+    '#FF756D',
+    '#FFF49C',
+    '#FFFD96',
+    '#85DE77',
+    '#FF9AA2',
+    '#FFB7B2',
+    '#FFDAC1',
+    '#E2F0CB',
+    '#F9FFCB',
+    '#B5EAD7',
+    '#C7CEEA',
+    '#FFB447',
+  ];
 
-    public editNote(): void {
-      this.$emit('noteEdited', this.note);
-    }
-
-    public cancelUpdateNote(): void {
-      this.$emit('noteCanceled');
-    }
-
-    public get editDialogVisible(): boolean {
-      return !!this.note;
-    }
+  public editNote(): void {
+    this.$emit('noteEdited', this.note);
   }
+
+  public cancelUpdateNote(): void {
+    this.$emit('noteCanceled');
+  }
+
+  public get editDialogVisible(): boolean {
+    return !!this.note;
+  }
+}
 </script>

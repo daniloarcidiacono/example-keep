@@ -93,35 +93,35 @@
 </template>
 
 <script lang="ts">
-  import {Component, Vue} from "vue-property-decorator";
-  import Alerts from "@/components/Alerts.vue";
-  import {securityService} from "@/shared/services/SecurityService";
+import {Component, Vue} from 'vue-property-decorator';
+import Alerts from '@/components/Alerts.vue';
+import {securityService} from '@/shared/services/SecurityService';
 
-  @Component({
-    components: {
-      Alerts
-    }
-  })
-  export default class App extends Vue {
-    private drawer: boolean | null = null;
+@Component({
+  components: {
+    Alerts,
+  },
+})
+export default class App extends Vue {
+  private drawer: boolean | null = null;
 
-    private items: any[] = [
-      { icon: 'mdi-lightbulb-outline', text: 'Notes', link: '/notes' },
-      { icon: 'mdi-package-down', text: 'Archive', link: '/notes/archived' },
-    ];
+  private items: any[] = [
+    { icon: 'mdi-lightbulb-outline', text: 'Notes', link: '/notes' },
+    { icon: 'mdi-package-down', text: 'Archive', link: '/notes/archived' },
+  ];
 
-    public logout(): void {
-      securityService.clearIdentity();
-      this.$router.push('login');
-    }
-
-    public isAuthenticated(): boolean {
-      return securityService.isAuthenticated();
-    }
-
-    public getUsername(): string | null {
-      return securityService.username;
-    }
+  public logout(): void {
+    securityService.clearIdentity();
+    this.$router.push('login');
   }
+
+  public isAuthenticated(): boolean {
+    return securityService.isAuthenticated();
+  }
+
+  public getUsername(): string | null {
+    return securityService.username;
+  }
+}
 </script>
 

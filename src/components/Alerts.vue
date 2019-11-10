@@ -30,36 +30,36 @@
 </template>
 
 <script lang="ts">
-    import {Vue, Component} from 'vue-property-decorator';
-    import {EventBus} from "@/shared/EventBus";
+import {Vue, Component} from 'vue-property-decorator';
+import {EventBus} from '@/shared/EventBus';
 
-    export interface Alert {
-        text: string;
-        icon?: string;
-        color: string;
-        timerId?: number;
+export interface Alert {
+    text: string;
+    icon?: string;
+    color: string;
+    timerId?: number;
+}
+
+@Component
+export default class Alerts extends Vue {
+    public alert: Alert | null = null;
+
+    public constructor() {
+        super();
+        EventBus.$on('alert', this.addAlert.bind(this));
     }
 
-    @Component
-    export default class Alerts extends Vue {
-        public alert: Alert | null = null;
+    public addAlert(alert: Alert) {
+        this.dismissAlert();
+        this.alert = alert;
+        this.alert.timerId = setTimeout(this.dismissAlert.bind(this), 2000);
+    }
 
-        public constructor() {
-            super();
-            EventBus.$on('alert', this.addAlert.bind(this));
-        }
-
-        public addAlert(alert: Alert) {
-            this.dismissAlert();
-            this.alert = alert;
-            this.alert.timerId = setTimeout(this.dismissAlert.bind(this), 2000);
-        }
-
-        public dismissAlert() {
-            if (this.alert != null) {
-                clearTimeout(this.alert.timerId);
-                this.alert = null;
-            }
+    public dismissAlert() {
+        if (this.alert != null) {
+            clearTimeout(this.alert.timerId);
+            this.alert = null;
         }
     }
+}
 </script>

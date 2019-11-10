@@ -132,116 +132,116 @@
 </template>
 
 <script lang="ts">
-  import {Vue, Component, Prop, Watch} from "vue-property-decorator";
-  import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
-  import {KeepError} from "@/shared/api/keep/dto/KeepError";
-  import {alertService} from "@/shared/services/AlertService";
-  import NoteEditor from "@/components/NoteEditor.vue";
-  import {keepApi} from "@/shared/api/APIExports";
-  const Muuri = require('muuri');
+import {Vue, Component, Prop, Watch} from 'vue-property-decorator';
+import {KeepNote} from '@/shared/api/keep/dto/KeepNote';
+import {KeepError} from '@/shared/api/keep/dto/KeepError';
+import {alertService} from '@/shared/services/AlertService';
+import NoteEditor from '@/components/NoteEditor.vue';
+import {keepApi} from '@/shared/api/APIExports';
+const Muuri = require('muuri');
 
-  @Component({
-    components: {
-      NoteEditor
-    }
-  })
-  export default class NoteList extends Vue {
-    @Prop()
-    private notes!: KeepNote[];
-    private grid!: any;
+@Component({
+  components: {
+    NoteEditor,
+  },
+})
+export default class NoteList extends Vue {
 
-    // Note edit state
-    private noteToEditIndex: number | null = null;
-    private noteToEdit: KeepNote | null = null;
+  @Prop()
+  private notes!: KeepNote[];
+  private grid!: any;
 
-    public dragStartIndex!: number | null;
+  // Note edit state
+  private noteToEditIndex: number | null = null;
+  private noteToEdit: KeepNote | null = null;
+  private dragStartIndex!: number | null;
 
-    public mounted() {
-        this.dragStartIndex = null;
-        this.grid = new Muuri('.grid', {
-            layout: {
-                horizontal: true
-            },
-            dragSortPredicate: {
-                action: "swap"
-            },
-            dragEnabled: true
-        })
-        .on('dragStart', (item: any) => {
-            this.dragStartIndex = this.grid.getItems().indexOf(item);
-        })
-        .on('dragReleaseEnd', (item: any) => {
-            const dragEndIndex: number = this.grid.getItems().indexOf(item);
-            const startNote: KeepNote = this.notes[this.dragStartIndex!];
-            const endNote: KeepNote = this.notes[dragEndIndex];
+  public mounted() {
+      this.dragStartIndex = null;
+      this.grid = new Muuri('.grid', {
+          layout: {
+              horizontal: true,
+          },
+          dragSortPredicate: {
+              action: 'swap',
+          },
+          dragEnabled: true,
+      })
+      .on('dragStart', (item: any) => {
+          this.dragStartIndex = this.grid.getItems().indexOf(item);
+      })
+      .on('dragReleaseEnd', (item: any) => {
+          const dragEndIndex: number = this.grid.getItems().indexOf(item);
+          const startNote: KeepNote = this.notes[this.dragStartIndex!];
+          const endNote: KeepNote = this.notes[dragEndIndex];
 
-            if (startNote !== endNote) {
-                // Swap ranks
-                // An atomic API would be better, but oh well...
-                const startRank: number = startNote.rank;
-                const endRank: number = endNote.rank;
-                Promise.all([
-                    keepApi.updateNoteRank(startNote.id!, endRank),
-                    keepApi.updateNoteRank(endNote.id!, startRank)
-                ]).then(() => {
-                    alertService.success('Note rank updated');
+          if (startNote !== endNote) {
+              // Swap ranks
+              // An atomic API would be better, but oh well...
+              const startRank: number = startNote.rank;
+              const endRank: number = endNote.rank;
+              Promise.all([
+                  keepApi.updateNoteRank(startNote.id!, endRank),
+                  keepApi.updateNoteRank(endNote.id!, startRank),
+              ]).then(() => {
+                  alertService.success('Note rank updated');
 
-                    // Update the ranks
-                    startNote.rank = endRank;
-                    endNote.rank = startRank;
+                  // Update the ranks
+                  startNote.rank = endRank;
+                  endNote.rank = startRank;
 
-                    // Swap the model
-                    this.$emit('swapNote', { from: this.dragStartIndex!, to: dragEndIndex });
+                  // Swap the model
+                  this.$emit('swapNote', { from: this.dragStartIndex!, to: dragEndIndex });
 
-                    // Hack to fix grid render order
-                    this.grid.move(item, this.dragStartIndex, { action: "swap", layout: "instant" });
-                }).catch(() => {
-                    // Undo the movement
-                    this.grid.move(item, this.dragStartIndex, { action: "swap" });
-                    alertService.error('Could not update note rank');
-                }).finally(() => {
-                    this.dragStartIndex = null;
-                });
-            }
-        });
-    }
-
-    public beforeDestroy(): void {
-        this.grid.destroy();
-    }
-
-    @Watch('notes')
-    private relayout(): void {
-        this.grid.layout(true);
-        this.grid.synchronize();
-    }
-
-    public deleteNote(note: KeepNote): void {
-        this.$emit('deleteNote', note);
-    }
-
-    public archiveNote(note: KeepNote): void {
-        this.$emit('archiveNote', note);
-    }
-
-    public editNote(note: KeepNote): void {
-        this.noteToEditIndex = this.notes.indexOf(note);
-        this.noteToEdit = { ... note };
-    }
-
-    public updateNote(note: KeepNote): void {
-      keepApi.updateNote(note).then(() => {
-        alertService.success("Note updated");
-        this.notes[this.noteToEditIndex!] = note;
-        this.cancelUpdateNote();
-      }).catch((error: KeepError) => {
-        alertService.error("Could not update note");
+                  // Hack to fix grid render order
+                  this.grid.move(item, this.dragStartIndex, { action: 'swap', layout: 'instant' });
+              }).catch(() => {
+                  // Undo the movement
+                  this.grid.move(item, this.dragStartIndex, { action: 'swap' });
+                  alertService.error('Could not update note rank');
+              }).finally(() => {
+                  this.dragStartIndex = null;
+              });
+          }
       });
-    }
-
-    public cancelUpdateNote(): void {
-      this.noteToEditIndex = null;
-      this.noteToEdit = null;
-    }
   }
+
+  public beforeDestroy(): void {
+      this.grid.destroy();
+  }
+
+  public deleteNote(note: KeepNote): void {
+      this.$emit('deleteNote', note);
+  }
+
+  public archiveNote(note: KeepNote): void {
+      this.$emit('archiveNote', note);
+  }
+
+  public editNote(note: KeepNote): void {
+      this.noteToEditIndex = this.notes.indexOf(note);
+      this.noteToEdit = { ... note };
+  }
+
+  public updateNote(note: KeepNote): void {
+    keepApi.updateNote(note).then(() => {
+      alertService.success('Note updated');
+      this.notes[this.noteToEditIndex!] = note;
+      this.cancelUpdateNote();
+    }).catch((error: KeepError) => {
+      alertService.error('Could not update note');
+    });
+  }
+
+  public cancelUpdateNote(): void {
+    this.noteToEditIndex = null;
+    this.noteToEdit = null;
+  }
+
+  @Watch('notes')
+  private relayout(): void {
+      this.grid.layout(true);
+      this.grid.synchronize();
+  }
+}
 </script>

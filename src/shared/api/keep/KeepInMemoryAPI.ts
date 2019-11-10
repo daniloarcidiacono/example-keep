@@ -1,5 +1,5 @@
-import {KeepAPI} from "@/shared/api/keep/KeepAPI";
-import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
+import {KeepAPI} from '@/shared/api/keep/KeepAPI';
+import {KeepNote} from '@/shared/api/keep/dto/KeepNote';
 
 export class KeepInMemoryAPI implements KeepAPI {
     private notes: KeepNote[] = [
@@ -68,7 +68,7 @@ export class KeepInMemoryAPI implements KeepAPI {
 
     public fetchNotes(archived: boolean): Promise<KeepNote[]> {
         return new Promise<KeepNote[]>((resolve, reject) => {
-            const result: KeepNote[] =  this.notes.filter(x => x.archived === archived).sort((a, b) => a.rank - b.rank);
+            const result: KeepNote[] = this.notes.filter(x => x.archived === archived).sort((a, b) => a.rank - b.rank);
             setTimeout(() => {
                 resolve(result);
             }, 500);
