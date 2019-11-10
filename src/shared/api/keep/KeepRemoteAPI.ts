@@ -1,20 +1,17 @@
-import axios, {AxiosResponse} from 'axios';
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {securityService} from '../../services/SecurityService';
 import {KeepAPI} from '@/shared/api/keep/KeepAPI';
 import {KeepNote} from '@/shared/api/keep/dto/KeepNote';
 import {KeepError} from '@/shared/api/keep/dto/KeepError';
+import {appConfigService} from "@/shared/services/AppConfigService";
 
 export class KeepRemoteAPI implements KeepAPI {
     public addNote(note: KeepNote): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             axios.post(
-                `/api/notes`,
+                `/notes`,
                 note,
-                {
-                    headers: {
-                        'X-TOKEN': securityService.token
-                    }
-                }
+                this.requestConfig
             ).then((response: AxiosResponse<{id: string}>) => {
                 resolve(response.data.id);
             }).catch((response: KeepError) => {
@@ -26,13 +23,9 @@ export class KeepRemoteAPI implements KeepAPI {
     public archiveNote(id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             axios.post(
-                `/api/notes/${id}/archive`,
+                `/notes/${id}/archive`,
                 null,
-                {
-                    headers: {
-                        'X-TOKEN': securityService.token
-                    }
-                }
+                this.requestConfig
             ).then((response: AxiosResponse<void>) => {
                 resolve();
             }).catch((response: KeepError) => {
@@ -44,12 +37,8 @@ export class KeepRemoteAPI implements KeepAPI {
     public deleteNote(id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             axios.delete(
-                `/api/notes/${id}`,
-                {
-                    headers: {
-                        'X-TOKEN': securityService.token
-                    }
-                }
+                `/notes/${id}`,
+                this.requestConfig
             ).then((response: AxiosResponse<void>) => {
                 resolve();
             }).catch((response: KeepError) => {
@@ -61,8 +50,9 @@ export class KeepRemoteAPI implements KeepAPI {
     public fetchNotes(archived: boolean): Promise<KeepNote[]> {
         return new Promise<KeepNote[]>((resolve, reject) => {
             axios.get(
-            `/api/notes?archived=${archived}`,
+            `/notes?archived=${archived}`,
             {
+                baseURL: appConfigService.keepBaseUrl,
                 headers: {
                     'X-TOKEN': securityService.token
                 }
@@ -77,13 +67,9 @@ export class KeepRemoteAPI implements KeepAPI {
     public updateNote(note: KeepNote): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             axios.put(
-                `/api/notes/${note.id}`,
+                `/notes/${note.id}`,
                 note,
-                {
-                    headers: {
-                        'X-TOKEN': securityService.token
-                    }
-                }
+                this.requestConfig
             ).then((response: AxiosResponse<void>) => {
                 resolve();
             }).catch((response: KeepError) => {
@@ -95,13 +81,9 @@ export class KeepRemoteAPI implements KeepAPI {
     public updateNoteRank(id: string, rank: number): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             axios.put(
-                `/api/notes/${id}/rank/${rank}`,
+                `/notes/${id}/rank/${rank}`,
                 null,
-                {
-                    headers: {
-                        'X-TOKEN': securityService.token
-                    }
-                }
+                this.requestConfig
             ).then((response: AxiosResponse<void>) => {
                 resolve();
             }).catch((response: KeepError) => {
@@ -109,5 +91,21 @@ export class KeepRemoteAPI implements KeepAPI {
             });
         });
     }
+
+    private get requestConfig(): AxiosRequestConfig {
+        if (securityService.isAuthenticated()) {
+            return {
+                baseURL: appConfigService.keepBaseUrl,
+                headers: {
+                    'X-TOKEN': securityService.token
+                }
+            }
+        } else {
+            return {
+                baseURL: appConfigService.keepBaseUrl
+            }
+        }
+    };
 }
 
+export const keepRemoteAPI: KeepAPI = new KeepRemoteAPI();

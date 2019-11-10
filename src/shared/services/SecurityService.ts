@@ -21,7 +21,8 @@ export class SecurityService {
     }
 
     public clearIdentity(): void {
-        localStorage.clear();
+        localStorage.removeItem('username');
+        localStorage.removeItem('token');
     }
 }
 

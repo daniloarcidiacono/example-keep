@@ -10,6 +10,14 @@ export class AlertService {
         } as Alert);
     }
 
+    public warning(text: string): void {
+        EventBus.$emit('alert', {
+            text,
+            color: 'warning',
+            icon: 'mdi-alert-circle-outline'
+        } as Alert);
+    }
+
     public error(text: string): void {
         EventBus.$emit('alert', {
             text,

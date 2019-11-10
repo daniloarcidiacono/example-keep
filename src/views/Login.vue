@@ -3,15 +3,27 @@
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-flow: column nowrap;
     justify-content: center;
+    align-items: center;
+
+    &__Title {
+        margin-bottom: 1em;
+    }
+
+    &__Button {
+        margin-top: 1em;
+    }
   }
+
 </style>
 
 <template>
   <div class="Login">
-      <v-form v-model="valid">
+    <div class="Login__Title headline">
+        Sign in
+    </div>
+    <v-form v-model="valid">
         <v-text-field
             v-model="username"
             label="Username"
@@ -33,13 +45,14 @@
             :rules="[v => !!v || 'Password is required']"
             required
         />
-      </v-form>
-      <v-btn color="primary"
-             :disabled="!valid"
-             :loading="loading"
-             @click="doLogin">
+    </v-form>
+    <v-btn class="Login__Button"
+           color="primary"
+           :disabled="!valid"
+           :loading="loading"
+           @click="doLogin">
         Login
-      </v-btn>
+    </v-btn>
   </div>
 </template>
 
@@ -65,7 +78,6 @@ export default class Login extends Vue {
             securityService.setIdentity(this.username, result.token);
             this.$router.push('notes');
         }).catch((error: KeepError) => {
-            console.log(error);
             alertService.error(`Login failed: ${error.message}`);
         }).finally(() => {
             this.loading = false;

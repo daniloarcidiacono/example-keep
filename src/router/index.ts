@@ -3,6 +3,8 @@ import VueRouter, {Route} from 'vue-router';
 import Notes from '@/views/Notes.vue';
 import Login from '@/views/Login.vue';
 import {securityService} from '@/shared/services/SecurityService';
+import Settings from "@/views/Settings.vue";
+import Tips from "@/views/Tips.vue";
 
 Vue.use(VueRouter);
 
@@ -30,6 +32,22 @@ const routes = [
     },
   },
   {
+    path: '/settings',
+    name: 'settings',
+    component: Settings,
+    meta: {
+      anonymousAllowed: true,
+    },
+  },
+  {
+    path: '/tips',
+    name: 'tips',
+    component: Tips,
+    meta: {
+      anonymousAllowed: true,
+    },
+  },
+  {
     path: '/login',
     name: 'login',
     component: Login,
@@ -44,7 +62,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes,
 });

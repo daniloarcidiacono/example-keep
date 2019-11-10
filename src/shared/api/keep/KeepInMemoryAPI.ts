@@ -3,7 +3,6 @@ import {KeepNote} from '@/shared/api/keep/dto/KeepNote';
 
 export class KeepInMemoryAPI implements KeepAPI {
     private notes: KeepNote[] = [
-
     ];
 
     public constructor() {
@@ -19,6 +18,8 @@ export class KeepInMemoryAPI implements KeepAPI {
                 }
             );
         }
+
+        console.info('Using KeepInMemoryAPI...');
     }
 
     public addNote(note: KeepNote): Promise<string> {
@@ -111,3 +112,5 @@ export class KeepInMemoryAPI implements KeepAPI {
         return null;
     }
 }
+
+export const keepInMemoryAPI: KeepAPI = new KeepInMemoryAPI();

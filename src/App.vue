@@ -17,7 +17,7 @@
       clipped-left
       color="amber">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <span class="title ml-3 mr-5">Google&nbsp;<span class="font-weight-light">Keep</span></span>
+      <span class="title ml-3 mr-5" style="cursor: pointer" @click="goHome">Google&nbsp;<span class="font-weight-light">Keep</span></span>
       <!--<v-text-field-->
               <!--solo-inverted-->
               <!--flat-->
@@ -52,7 +52,6 @@
     </v-app-bar>
 
     <v-navigation-drawer
-        v-if="isAuthenticated()"
         v-model="drawer"
         app
         clipped
@@ -96,19 +95,48 @@
 import {Component, Vue} from 'vue-property-decorator';
 import Alerts from '@/components/Alerts.vue';
 import {securityService} from '@/shared/services/SecurityService';
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import {alertService} from "@/shared/services/AlertService";
+import {appConfigService} from "@/shared/services/AppConfigService";
 
 @Component({
   components: {
-    Alerts,
-  },
+    Alerts
+  }
 })
 export default class App extends Vue {
   private drawer: boolean | null = null;
 
-  private items: any[] = [
+  private authenticatedItems: any[] = [
     { icon: 'mdi-lightbulb-outline', text: 'Notes', link: '/notes' },
     { icon: 'mdi-package-down', text: 'Archive', link: '/notes/archived' },
+    { divider: true },
+    { icon: 'mdi-settings', text: 'Settings', link: '/settings' },
+    { icon: 'mdi-information-variant', text: 'Tips', link: '/tips' }
   ];
+
+  private anonymousItems: any[] = [
+    { icon: 'mdi-settings', text: 'Settings', link: '/settings' },
+    { icon: 'mdi-information-variant', text: 'Tips', link: '/tips' }
+  ];
+
+  public mounted() {
+    // Add a 401 response interceptor
+    axios.interceptors.response.use((response: AxiosResponse) => {
+      return response;
+    }, (error: any) => {
+      if (this.$router.currentRoute.name !== 'login' && error.response.status === 401) {
+        alertService.warning('Session has expired');
+        this.logout();
+      } else {
+        return Promise.reject(error);
+      }
+    });
+  }
+
+  public goHome(): void {
+    this.$router.push('notes');
+  }
 
   public logout(): void {
     securityService.clearIdentity();
@@ -121,6 +149,10 @@ export default class App extends Vue {
 
   public getUsername(): string | null {
     return securityService.username;
+  }
+
+  public get items(): any[] {
+    return securityService.isAuthenticated() ? this.authenticatedItems : this.anonymousItems;
   }
 }
 </script>
