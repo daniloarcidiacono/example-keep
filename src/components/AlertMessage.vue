@@ -10,7 +10,6 @@
         overflow: hidden;
 
         &__Icon {
-
         }
 
         &__Content {
@@ -22,10 +21,9 @@
 <template>
     <div class="AlertMessage">
         <div class="AlertMessage__Icon">
-            <v-icon size="128" v-if="!hasIconSlot">
+            <v-icon size="128" v-if="icon">
                 {{ icon }}
             </v-icon>
-            <slot v-else name="icon"></slot>
         </div>
         <div class="AlertMessage__Content display-2 font-weight-thin">
             <slot></slot>
@@ -40,9 +38,5 @@ import {Component, Prop, Vue} from 'vue-property-decorator';
 export default class AlertMessage extends Vue {
     @Prop()
     public icon!: string;
-
-    get hasIconSlot() {
-        return !this.icon && !!this.$slots.icon;
-    }
 }
 </script>

@@ -3,6 +3,8 @@
         width: 100%;
         height: 100%;
         overflow-x: auto;
+        display: grid; // Muuri does not work without this
+        padding: 1em;
     }
 
     .NoteCard {
@@ -55,19 +57,20 @@
         height: 240px;
         margin: 5px;
         z-index: 1;
+
+        &.muuri-item-dragging {
+            z-index: 3;
+        }
+
+        &.muuri-item-releasing {
+            z-index: 2;
+        }
+
+        &.muuri-item-hidden {
+            z-index: 0;
+        }
     }
 
-    .item.muuri-item-dragging {
-        z-index: 3;
-    }
-
-    .item.muuri-item-releasing {
-        z-index: 2;
-    }
-
-    .item.muuri-item-hidden {
-        z-index: 0;
-    }
 
     .item-content {
         position: relative;
@@ -81,14 +84,16 @@
         <div class="grid">
             <div class="item" v-for="note in notes">
                 <div class="item-content">
-                    <v-card
-                        class="NoteCard mx-auto"
-                        :style="{'backgroundColor': note.color}">
+                    <v-card class="NoteCard mx-auto"
+                            :style="{'backgroundColor': note.color}">
                         <v-card-title class="NoteCard__Title headline">{{ note.title }}</v-card-title>
+
                         <v-card-subtitle class="NoteCard__Subtitle">
                             <v-textarea v-model="note.content" readonly no-resize></v-textarea>
                         </v-card-subtitle>
+
                         <v-divider class="NoteCard__ActionsDivider"/>
+
                         <v-card-actions class="NoteCard__Actions">
                             <v-spacer></v-spacer>
                             <v-tooltip bottom>
@@ -99,6 +104,7 @@
                                 </template>
                                 <span>Edit</span>
                             </v-tooltip>
+
                             <v-tooltip bottom v-if="!note.archived">
                                 <template v-slot:activator="{ on }">
                                     <v-btn icon @click="archiveNote(note)" v-on="on">
@@ -107,6 +113,7 @@
                                 </template>
                                 <span>Archive</span>
                             </v-tooltip>
+
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on }">
                                     <v-btn icon @click="deleteNote(note)" v-on="on">
@@ -126,8 +133,8 @@
 
 <script lang="ts">
   import {Vue, Component, Prop, Watch} from "vue-property-decorator";
-  import {KeepNote} from "@/shared/api/KeepNote";
-  import {KeepError} from "@/shared/api/KeepError";
+  import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
+  import {KeepError} from "@/shared/api/keep/dto/KeepError";
   import {alertService} from "@/shared/services/AlertService";
   import NoteEditor from "@/components/NoteEditor.vue";
   import {keepApi} from "@/shared/api/APIExports";
@@ -149,10 +156,6 @@
 
     public dragStartIndex!: number | null;
 
-    public constructor() {
-        super();
-    }
-
     public mounted() {
         this.dragStartIndex = null;
         this.grid = new Muuri('.grid', {
@@ -164,10 +167,10 @@
             },
             dragEnabled: true
         })
-        .on('dragStart', (item, event) => {
+        .on('dragStart', (item: any) => {
             this.dragStartIndex = this.grid.getItems().indexOf(item);
         })
-        .on('dragReleaseEnd', (item, event) => {
+        .on('dragReleaseEnd', (item: any) => {
             const dragEndIndex: number = this.grid.getItems().indexOf(item);
             const startNote: KeepNote = this.notes[this.dragStartIndex!];
             const endNote: KeepNote = this.notes[dragEndIndex];
@@ -178,8 +181,8 @@
                 const startRank: number = startNote.rank;
                 const endRank: number = endNote.rank;
                 Promise.all([
-                    keepApi.updateNoteRank(startNote.id, endRank),
-                    keepApi.updateNoteRank(endNote.id, startRank)
+                    keepApi.updateNoteRank(startNote.id!, endRank),
+                    keepApi.updateNoteRank(endNote.id!, startRank)
                 ]).then(() => {
                     alertService.success('Note rank updated');
 

@@ -1,5 +1,5 @@
-import {KeepNote} from "@/shared/api/KeepNote";
-import {KeepAPI} from "@/shared/api/KeepAPI";
+import {KeepAPI} from "@/shared/api/keep/KeepAPI";
+import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
 
 export class KeepInMemoryAPI implements KeepAPI {
     private notes: KeepNote[] = [

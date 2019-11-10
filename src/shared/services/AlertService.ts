@@ -5,14 +5,16 @@ export class AlertService {
     public success(text: string): void {
         EventBus.$emit('alert', {
             text,
-            timerId: 0
+            color: 'success',
+            icon: 'mdi-check'
         } as Alert);
     }
 
     public error(text: string): void {
         EventBus.$emit('alert', {
             text,
-            timerId: 0
+            color: 'error',
+            icon: 'mdi-alert-circle-outline'
         } as Alert);
     }
 }

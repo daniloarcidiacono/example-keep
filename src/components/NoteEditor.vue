@@ -1,36 +1,24 @@
 <style lang="scss">
-  .NoteList {
-      width: 100%;
-      height: 100%;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      grid-gap: 1em;
-      padding: 1em;
-  }
-
-  .Swatches {
+  .Colors {
     display: flex;
     flex-flow: row nowrap;
-  }
+    &__Swatch {
+      width: 16px;
+      height: 16px;
 
-  .ColorSwatch {
-    width: 16px;
-    height: 16px;
+      margin-left: 4px;
+      border-radius: 8px;
 
-    margin-left: 4px;
-    border-radius: 8px;
-
-    &--selected {
-      outline: 1px solid black;
+      &--selected {
+        outline: 1px solid black;
+      }
     }
   }
 </style>
 
 <template>
   <v-overlay :value="editDialogVisible">
-    <v-dialog
-        v-model="editDialogVisible"
-        width="500">
+    <v-dialog v-model="editDialogVisible" width="500">
       <v-card v-if="note">
         <v-card-title
             class="headline lighten-2"
@@ -46,10 +34,10 @@
         <v-divider></v-divider>
 
         <v-card-actions>
-          <div v-for="color in colors" class="Swatches">
-            <div class="ColorSwatch"
+          <div v-for="color in colors" class="Colors">
+            <div class="Colors__Swatch"
                  :style="{ 'backgroundColor': color }"
-                 :class="{ 'ColorSwatch--selected': color === note.color }"
+                 :class="{ 'Colors__Swatch--selected': color === note.color }"
                  @click="note.color = color">
             </div>
           </div>
@@ -67,11 +55,8 @@
 </template>
 
 <script lang="ts">
-  import {Vue, Component, Prop} from "vue-property-decorator";
-  import {KeepNote} from "@/shared/api/KeepNote";
-  import {keepApi} from "@/shared/api/KeepInMemoryAPI";
-  import {KeepError} from "@/shared/api/KeepError";
-  import {alertService} from "@/shared/services/AlertService";
+  import {Component, Prop, Vue} from "vue-property-decorator";
+  import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
 
   @Component
   export default class NoteEditor extends Vue {
@@ -105,7 +90,7 @@
       this.$emit('noteCanceled');
     }
 
-    get editDialogVisible(): boolean {
+    public get editDialogVisible(): boolean {
       return !!this.note;
     }
   }

@@ -45,9 +45,9 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
-    import {KeepError} from "@/shared/api/KeepError";
+    import {KeepError} from "@/shared/api/keep/dto/KeepError";
     import {alertService} from "@/shared/services/AlertService";
-    import {LoginResponse} from "@/shared/api/LoginResponse";
+    import {LoginResponse} from "@/shared/api/idp/dto/LoginResponse";
     import {securityService} from "@/shared/services/SecurityService";
     import {idpApi} from "@/shared/api/APIExports";
 

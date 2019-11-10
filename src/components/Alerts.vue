@@ -1,19 +1,32 @@
 <style lang="scss">
+    .Alert {
+        &__Content {
+        }
 
+        &__ContentIcon {
+            margin-right: 0.5em;
+        }
+    }
 </style>
 
 <template>
-    <div class="Alerts">
-        <v-snackbar v-if="alert" :value="true" :timeout="2000">
+    <v-snackbar v-if="alert"
+                class="Alert"
+                :value="true"
+                :timeout="2000"
+                :color="alert.color">
+        <div class="Alert__Content">
+            <v-icon v-if="alert.icon" class="Alert__ContentIcon">{{ alert.icon }}</v-icon>
             {{ alert.text }}
-            <v-btn
-                color="pink"
-                text
-                @click="dismissAlert(index)">
-                Dismiss
-            </v-btn>
-        </v-snackbar>
-    </div>
+        </div>
+
+        <v-btn
+            color="white"
+            text
+            @click="dismissAlert(index)">
+            Dismiss
+        </v-btn>
+    </v-snackbar>
 </template>
 
 <script lang="ts">
@@ -23,35 +36,28 @@
     export interface Alert {
         text: string;
         icon?: string;
-        timerId: number;
+        color: string;
+        timerId?: number;
     }
 
     @Component
     export default class Alerts extends Vue {
         public alert: Alert | null = null;
-        public alertTimer: number | null;
 
         public constructor() {
             super();
             EventBus.$on('alert', this.addAlert.bind(this));
         }
 
-        public mounted() {
-            this.alertTimer = null;
-        }
-
         public addAlert(alert: Alert) {
             this.dismissAlert();
-            this.alertTimer = setTimeout(() => {
-                this.alert = null;
-            }, 2000);
             this.alert = alert;
+            this.alert.timerId = setTimeout(this.dismissAlert.bind(this), 2000);
         }
 
         public dismissAlert() {
-            if (this.alertTimer != null) {
-                clearTimeout(this.alertTimer);
-                this.alertTimer = null;
+            if (this.alert != null) {
+                clearTimeout(this.alert.timerId);
                 this.alert = null;
             }
         }

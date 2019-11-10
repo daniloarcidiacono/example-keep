@@ -1,7 +1,7 @@
-import {LoginResponse} from "@/shared/api/LoginResponse";
-import {IdpAPI} from "@/shared/api/IdpAPI";
+import {LoginResponse} from "./dto/LoginResponse";
 import axios, {AxiosResponse} from "axios";
-import {KeepError} from "@/shared/api/KeepError";
+import {KeepError} from "../keep/dto/KeepError";
+import {IdpAPI} from "@/shared/api/idp/IdpAPI";
 
 export class IdpRemoteAPI implements IdpAPI {
     public constructor() {

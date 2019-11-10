@@ -1,5 +1,5 @@
-import {LoginResponse} from "@/shared/api/LoginResponse";
-import {IdpAPI} from "@/shared/api/IdpAPI";
+import {LoginResponse} from "./dto/LoginResponse";
+import {IdpAPI} from "@/shared/api/idp/IdpAPI";
 
 export class IdpInMemoryAPI implements IdpAPI {
     private tokens: { [token: string]: string } = {};

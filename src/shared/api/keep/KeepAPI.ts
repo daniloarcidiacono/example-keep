@@ -1,4 +1,4 @@
-import {KeepNote} from "@/shared/api/KeepNote";
+import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
 
 export interface KeepAPI {
     fetchNotes(archived: boolean): Promise<KeepNote[]>;

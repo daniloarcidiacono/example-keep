@@ -119,7 +119,7 @@
       return securityService.isAuthenticated();
     }
 
-    public getUsername(): string {
+    public getUsername(): string | null {
       return securityService.username;
     }
   }

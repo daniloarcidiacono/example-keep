@@ -11,13 +11,16 @@
 
 <template>
   <div class="Notes">
-    <AlertMessage v-if="noNotes" icon="mdi-note-multiple-outline">
-      No notes
-    </AlertMessage>
     <AlertMessage v-if="isError" icon="mdi-alert-circle-outline">
       Could not load notes, <a href="#" @click.stop="load">retry.</a>
     </AlertMessage>
+
     <v-progress-circular v-if="isLoading" indeterminate />
+
+    <AlertMessage v-if="noNotes" icon="mdi-note-multiple-outline">
+      No notes
+    </AlertMessage>
+
     <NoteList v-if="hasNotes" :notes="notes" @deleteNote="deleteNote" @archiveNote="archiveNote" @swapNote="swapNote" />
     <NoteEditor :note="note" @noteEdited="createNote" @noteCanceled="cancelCreateNote" />
 
@@ -41,9 +44,9 @@
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from "vue-property-decorator";
   import NoteList from "@/components/NoteList.vue";
-  import {KeepNote} from "@/shared/api/KeepNote";
+  import {KeepNote} from "@/shared/api/keep/dto/KeepNote";
   import {LoadingState} from "@/shared/LoadingState";
-  import {KeepError} from "@/shared/api/KeepError";
+  import {KeepError} from "@/shared/api/keep/dto/KeepError";
   import NoteEditor from "@/components/NoteEditor.vue";
   import {alertService} from "@/shared/services/AlertService";
   import AlertMessage from "@/components/AlertMessage.vue";
@@ -66,7 +69,6 @@
 
     public constructor() {
       super();
-
       this.load();
     }
 
@@ -82,7 +84,7 @@
     }
 
     private archiveNote(note: KeepNote): void {
-      keepApi.archiveNote(note.id).then(() => {
+      keepApi.archiveNote(note.id!).then(() => {
         alertService.success("Note archived");
         this.notes.splice(this.notes.indexOf(note), 1);
       }).catch((error: KeepError) => {
