@@ -133,7 +133,7 @@ app.use((req, res, next) => {
 app.get('/notes', (req, res) => {
     // req.query.archived is a string!
     let archived = req.query.archived === 'true';
-    res.send(notes[req.user].filter(x => x.archived === archived)).sort((a, b) => a.rank - b.rank);
+    res.send(notes[req.user].filter(x => x.archived === archived).sort((a, b) => a.rank - b.rank));
 });
 
 /**
